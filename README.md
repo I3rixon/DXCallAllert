@@ -1,4 +1,5 @@
-DXCallAlert
+# DXCallAlert
+
 A Python tool that monitors WSJT-X UDP packets and alerts you when a new DXCC entity is decoded that you haven't confirmed yet.
 Features
 
@@ -9,7 +10,7 @@ Tracks confirmed countries to avoid duplicate alerts
 Sends Windows notifications for new DXCC entities
 Displays callsign, country, mode, and SNR information
 
-Requirements
+## Requirements
 
 Python 3.6+
 WSJT-X configured to send UDP packets
