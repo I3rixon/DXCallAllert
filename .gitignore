@@ -1,0 +1,26 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Virtual environments
+venv/
+env/
+ENV/
+*.egg-info/
+
+# Data
+data/
+*.dat
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
