@@ -15,6 +15,8 @@ Displays callsign, country, mode, and SNR information
 
 ![Screenshot_2.jpg](Screenshot_2.jpg)
 
+![Screenshot_3.jpg](Screenshot_3.jpg)
+
 ## Requirements
 
 Python 3.6+
