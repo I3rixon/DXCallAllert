@@ -1,3 +1,11 @@
+"""
+Author: Alexander Zahrebaiev
+Callsign: UW5EMC
+Email: lulzsecer@gmail.com
+Website: https://devtech.dp.ua/
+Date: 2026-02-01
+Version: 1.0
+"""
 import socket
 from config import UDP_IP, UDP_PORT, CTY_FILE, CONFIRMED_FILE
 from wsjtx.decoder import parse_decode
