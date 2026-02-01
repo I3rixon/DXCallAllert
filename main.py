@@ -204,7 +204,7 @@ class MainWindow(QMainWindow):
         mode = status.get("mode") or "-"
         self.band_label.setText(f"Band: {band}")
         self.mode_label.setText(f"Mode: {mode}")
-        self.current_mode = mode
+
         try:
             self.freq_label.setText(f"Freq: {freq/1e6:.3f} MHz")
         except Exception:
