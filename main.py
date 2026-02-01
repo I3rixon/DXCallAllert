@@ -6,19 +6,22 @@ Website: https://devtech.dp.ua/
 Date: 2026-02-01
 Version: 1.1
 """
+import socket
 # python
 import sys
-import socket
+
+from PySide6.QtCore import QThread, Signal, Slot
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QTableWidget, QTableWidgetItem, QPlainTextEdit, QMessageBox
+    QPushButton, QLabel, QTableWidget, QTableWidgetItem, QPlainTextEdit
 )
-from PySide6.QtCore import QThread, Signal, Slot
+
 from config import UDP_IP, UDP_PORT, CTY_FILE, CONFIRMED_FILES, CONFIRMED_FILE_DEFAULT
-from wsjtx.decoder import parse_decode, parse_status
 from dxcc.callsign import extract_dx_call
 from dxcc.cty_parser import load_cty, get_country
 from notify.windows import notify_new_dxcc
+from wsjtx.decoder import parse_decode, parse_status
+
 
 def load_confirmed(path):
     try:
