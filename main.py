@@ -47,6 +47,7 @@ class UdpWorker(QThread):
         self.prefixes = prefixes
         self.alerted = set()
         self.current_band = None
+        self.current_mode = None
         self.current_frequency = None
         self.confirmed = set()
 
@@ -74,14 +75,16 @@ class UdpWorker(QThread):
                     new_band = status.get("band")
                     if new_band != self.current_band:
                         self.current_band = new_band
+                        self.current_mode = status.get("mode")
                         self.current_frequency = new_frequency
                         self.confirmed = get_confirmed_for_band(self.current_band)
                         self.alerted.clear()
                         self.log.emit(f"Band changed to: {self.current_band or 'unknown'} ({(self.current_frequency or 0)/1e6:.3f} MHz)")
+                        self.log.emit(f"Mode: {self.current_mode or 'unknown'}")
                         self.log.emit(f"Loaded {len(self.confirmed)} confirmed countries for this band")
                     else:
                         self.current_frequency = new_frequency
-                    self.status_update.emit({"frequency": self.current_frequency, "band": self.current_band})
+                    self.status_update.emit({"frequency": self.current_frequency, "band": self.current_band, "mode": self.current_mode})
                     continue
 
                 decoded = parse_decode(data, self.current_frequency)
@@ -151,15 +154,18 @@ class MainWindow(QMainWindow):
         self.stop_btn.setEnabled(False)
         self.band_label = QLabel("Band: -")
         self.freq_label = QLabel("Freq: -")
+        self.mode_label = QLabel("Mode: -")
+
         h.addWidget(self.start_btn)
         h.addWidget(self.stop_btn)
         h.addStretch()
         h.addWidget(self.band_label)
         h.addWidget(self.freq_label)
+        h.addWidget(self.mode_label)
         v.addLayout(h)
 
-        self.table = QTableWidget(0, 5)
-        self.table.setHorizontalHeaderLabels(["Time", "Band", "Country", "Call", "SNR"])
+        self.table = QTableWidget(0, 6)
+        self.table.setHorizontalHeaderLabels(["Time", "Band", "Country", "Call", "Mode", "SNR"])
         v.addWidget(self.table)
 
         self.log = QPlainTextEdit()
@@ -195,7 +201,10 @@ class MainWindow(QMainWindow):
     def on_status(self, status):
         freq = status.get("frequency") or 0
         band = status.get("band") or "-"
+        mode = status.get("mode") or "-"
         self.band_label.setText(f"Band: {band}")
+        self.mode_label.setText(f"Mode: {mode}")
+        self.current_mode = mode
         try:
             self.freq_label.setText(f"Freq: {freq/1e6:.3f} MHz")
         except Exception:
@@ -211,11 +220,13 @@ class MainWindow(QMainWindow):
         country_item = QTableWidgetItem(country)
         call_item = QTableWidgetItem(call)
         snr_item = QTableWidgetItem(str(snr))
+        mode_item = QTableWidgetItem(str(self.current_mode))
         self.table.setItem(row, 0, time_item)
         self.table.setItem(row, 1, band_item)
         self.table.setItem(row, 2, country_item)
         self.table.setItem(row, 3, call_item)
-        self.table.setItem(row, 4, snr_item)
+        self.table.setItem(row, 4, mode_item)
+        self.table.setItem(row, 5, snr_item)
 
     @Slot(str)
     def append_log(self, text):
