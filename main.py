@@ -15,7 +15,7 @@ def load_confirmed(path):
 def main():
     prefixes = load_cty(CTY_FILE)
     confirmed = load_confirmed(CONFIRMED_FILE)
-    print(confirmed)
+    #print(confirmed)
     alerted = set()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
