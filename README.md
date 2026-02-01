@@ -10,6 +10,9 @@ Tracks confirmed countries to avoid duplicate alerts
 Sends Windows notifications for new DXCC entities
 Displays callsign, country, mode, and SNR information
 
+## Screenshots:
+![Screenshot_1.jpg](Screenshot_1.jpg)
+
 ## Requirements
 
 Python 3.6+
