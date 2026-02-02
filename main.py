@@ -15,7 +15,8 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QTableWidget, QTableWidgetItem, QPlainTextEdit
 )
-from PySide6.QtGui import QIcon, QPixmap, Qt
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import Qt
 
 from config import UDP_IP, UDP_PORT, CTY_FILE, CONFIRMED_FILES, CONFIRMED_FILE_DEFAULT
 from dxcc.callsign import extract_dx_call
@@ -57,8 +58,8 @@ class UdpWorker(QThread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             sock.bind((UDP_IP, UDP_PORT))
-        except Exception as e:
-            self.log.emit(f"Failed to bind UDP {UDP_IP}:{UDP_PORT}: {e}")
+        except Exception as error:
+            self.log.emit(f"Failed to bind UDP {UDP_IP}:{UDP_PORT}: {error}")
             return
 
         self.log.emit(f"Listening UDP {UDP_IP}:{UDP_PORT}...")
@@ -112,16 +113,19 @@ class UdpWorker(QThread):
                 # Optionally trigger native notification
                 try:
                     notify_new_dxcc(country, call, decoded.get("mode", ""), decoded.get("snr", 0))
-                except Exception:
-                    pass
+                except (KeyError, ValueError, TypeError) as error:
+                    # Log the error if needed
+                    print(f"Failed to notify new DXCC: {error}")
 
-        except Exception as e:
-            self.log.emit(f"Worker error: {e}")
+        except Exception as error:
+            self.log.emit(f"Worker error: {error}")
         finally:
             try:
                 sock.close()
-            except Exception:
-                pass
+            except (KeyError, ValueError, TypeError) as error:
+                print(f"Failed to close socket: {error}")
+                self.log.emit(f"Failed to close socket: {error}")
+
             self.finished_clean.emit()
 
     def stop(self):
@@ -131,8 +135,9 @@ class UdpWorker(QThread):
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.sendto(b"", (UDP_IP, UDP_PORT))
             s.close()
-        except Exception:
-            pass
+        except (KeyError, ValueError, TypeError) as error:
+            print(f"Failed to close socket: {error}")
+            self.log.emit(f"Failed to close socket: {error}")
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -145,8 +150,8 @@ class MainWindow(QMainWindow):
         self.icon_path = "assets/images/logo_dxwatcher.png"
         try:
             self.setWindowIcon(QIcon(self.icon_path))
-        except Exception:
-            pass
+        except (KeyError, ValueError, TypeError) as error:
+            print(f"Failed to set window icon: {error}")
 
         self._build_ui()
 
@@ -160,9 +165,10 @@ class MainWindow(QMainWindow):
         try:
             pix = QPixmap(self.icon_path)
             if not pix.isNull():
-                icon_label.setPixmap(pix.scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        except Exception:
-            pass
+                icon_label.setPixmap(pix.scaled(128, 128, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+        except (KeyError, ValueError, TypeError) as error:
+            print(f"Failed to set icon pixmap: {error}")
+
         h.addWidget(icon_label)
         self.start_btn = QPushButton("Start")
         self.stop_btn = QPushButton("Stop")
@@ -222,7 +228,8 @@ class MainWindow(QMainWindow):
         self.current_mode = mode
         try:
             self.freq_label.setText(f"Freq: {freq/1e6:.3f} MHz")
-        except Exception:
+        except (KeyError, ValueError, TypeError) as error:
+            print(f"Failed to set frequency label: {error}")
             self.freq_label.setText("Freq: -")
 
     @Slot(str, str, str,  int, object)
@@ -266,8 +273,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     try:
         app.setWindowIcon(QIcon("assets/images/logo_dxwatcher.png"))
-    except Exception:
-        pass
+    except (KeyError, ValueError, TypeError) as e:
+        print(f"Failed to set app icon: {e}")
     w = MainWindow()
     w.resize(800, 600)
     w.show()
