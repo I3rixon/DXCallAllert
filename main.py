@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("DXCC Watcher - GUI")
         self.prefixes = load_cty(CTY_FILE)
-
+        self.current_mode = None
         self.worker = None
 
         self._build_ui()
@@ -204,23 +204,24 @@ class MainWindow(QMainWindow):
         mode = status.get("mode") or "-"
         self.band_label.setText(f"Band: {band}")
         self.mode_label.setText(f"Mode: {mode}")
-
+        self.current_mode = mode
         try:
             self.freq_label.setText(f"Freq: {freq/1e6:.3f} MHz")
         except Exception:
             self.freq_label.setText("Freq: -")
 
-    @Slot(str, str, str, int, object)
+    @Slot(str, str, str, str, int, object)
     def on_new_dxcc(self, country, call, mode, snr, decoded):
         import datetime
         row = self.table.rowCount()
         self.table.insertRow(row)
+        mode = self.current_mode or "-"
         time_item = QTableWidgetItem(datetime.datetime.now().strftime("%H:%M:%S"))
         band_item = QTableWidgetItem(decoded.get("band") or "-")
         country_item = QTableWidgetItem(country)
         call_item = QTableWidgetItem(call)
         snr_item = QTableWidgetItem(str(snr))
-        mode_item = QTableWidgetItem(str(self.current_mode))
+        mode_item = QTableWidgetItem(str(mode))
         self.table.setItem(row, 0, time_item)
         self.table.setItem(row, 1, band_item)
         self.table.setItem(row, 2, country_item)
