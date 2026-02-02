@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QTableWidget, QTableWidgetItem, QPlainTextEdit
 )
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap, Qt
 
 from config import UDP_IP, UDP_PORT, CTY_FILE, CONFIRMED_FILES, CONFIRMED_FILE_DEFAULT
 from dxcc.callsign import extract_dx_call
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow):
         try:
             pix = QPixmap(self.icon_path)
             if not pix.isNull():
-                icon_label.setPixmap(pix.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                icon_label.setPixmap(pix.scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         except Exception:
             pass
         h.addWidget(icon_label)
