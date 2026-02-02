@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QTableWidget, QTableWidgetItem, QPlainTextEdit
 )
+from PySide6.QtGui import QIcon, QPixmap
 
 from config import UDP_IP, UDP_PORT, CTY_FILE, CONFIRMED_FILES, CONFIRMED_FILE_DEFAULT
 from dxcc.callsign import extract_dx_call
@@ -141,6 +142,12 @@ class MainWindow(QMainWindow):
         self.current_mode = None
         self.worker = None
 
+        self.icon_path = "assets/images/logo_dxwatcher.png"
+        try:
+            self.setWindowIcon(QIcon(self.icon_path))
+        except Exception:
+            pass
+
         self._build_ui()
 
     def _build_ui(self):
@@ -149,6 +156,14 @@ class MainWindow(QMainWindow):
         v = QVBoxLayout(central)
 
         h = QHBoxLayout()
+        icon_label = QLabel()
+        try:
+            pix = QPixmap(self.icon_path)
+            if not pix.isNull():
+                icon_label.setPixmap(pix.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        except Exception:
+            pass
+        h.addWidget(icon_label)
         self.start_btn = QPushButton("Start")
         self.stop_btn = QPushButton("Stop")
         self.stop_btn.setEnabled(False)
@@ -210,8 +225,8 @@ class MainWindow(QMainWindow):
         except Exception:
             self.freq_label.setText("Freq: -")
 
-    @Slot(str, str, str, str, int, object)
-    def on_new_dxcc(self, country, call, mode, snr, decoded):
+    @Slot(str, str, str,  int, object)
+    def on_new_dxcc(self, country, call, snr, decoded):
         import datetime
         row = self.table.rowCount()
         self.table.insertRow(row)
@@ -249,6 +264,10 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    try:
+        app.setWindowIcon(QIcon("assets/images/logo_dxwatcher.png"))
+    except Exception:
+        pass
     w = MainWindow()
     w.resize(800, 600)
     w.show()
