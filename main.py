@@ -232,8 +232,8 @@ class MainWindow(QMainWindow):
             print(f"Failed to set frequency label: {error}")
             self.freq_label.setText("Freq: -")
 
-    @Slot(str, str, str,  int, object)
-    def on_new_dxcc(self, country, call, snr, decoded):
+    @Slot(str, str, str, str,  int, object)
+    def on_new_dxcc(self, country, call, mode, snr, decoded):
         import datetime
         row = self.table.rowCount()
         self.table.insertRow(row)
